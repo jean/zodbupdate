@@ -24,7 +24,7 @@ setup(name='zodbupdate',
       description=
         'Update ZODB class references for moved or renamed classes.',
       long_description=(
-        read('README.txt')
+        read('README.md')
         + '\n' +
         read('CHANGES.txt')),
       version='0.6dev',
