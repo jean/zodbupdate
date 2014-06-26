@@ -61,13 +61,13 @@ class Updater(object):
             t = self.__new_transaction()
 
             for oid, serial, current in self.records:
-                logger.debug('Processing OID %s' % ZODB.utils.oid_repr(oid))
+                # logger.debug('Processing OID %s' % ZODB.utils.oid_repr(oid))
 
                 new = self.processor.rename(current)
                 if new is None:
                     continue
 
-                logger.debug('Updated OID %s' % ZODB.utils.oid_repr(oid))
+                logger.debug('Updated OID %s Old %s new %s' % (ZODB.utils.oid_repr(oid), current.__class__.__name__, new.__class__.__name__))
                 self.storage.store(oid, serial, new.getvalue(), '', t)
                 count += 1
 
@@ -79,12 +79,14 @@ class Updater(object):
             self.__commit_transaction(t, count != 0)
         except (Exception,), e:
             if not self.debug:
+                # logger.debug('Skipping exception: %s' % e)
                 raise e
-            import sys, pdb
-            (type, value, traceback) = sys.exc_info()
-            pdb.post_mortem(traceback)
-            del traceback
-            raise e
+            else:
+                import sys, pdb
+                (type, value, traceback) = sys.exc_info()
+                pdb.post_mortem(traceback)
+                del traceback
+                raise e
 
     @property
     def records(self):
