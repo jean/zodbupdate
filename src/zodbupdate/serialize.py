@@ -160,6 +160,7 @@ class ObjectRenamer(object):
         """
         if symb_info in self.__changes:
             self.__changed = True
+            logger.info(u'Change %s to %s' % (symb_info, self.__changes[symb_info]))
             return self.__changes[symb_info]
         else:
             symb = find_global(*symb_info, Broken=ZODBBroken)
@@ -254,7 +255,7 @@ class ObjectRenamer(object):
         self.__changed = False
 
         unpickler = self.__unpickler(input_file)
-        class_meta = unpickler.load()
+        old_class_meta = class_meta = unpickler.load()
         data = unpickler.load()
 
         class_meta = self.__update_class_meta(class_meta)
@@ -263,6 +264,12 @@ class ObjectRenamer(object):
                 (hasattr(unpickler, 'need_repickle') and
                  unpickler.need_repickle())):
             return None
+        if (hasattr(unpickler, 'need_repickle') and unpickler.need_repickle()):
+            logger.info('Need repickling %s' % class_meta)
+        elif old_class_meta != class_meta:
+            logger.info('%s, Rename from %s to %s' % (self.__changed, old_class_meta, class_meta))
+        else:
+            logger.info('%s, Changed %s' % (self.__changed, class_meta))
 
         output_file = cStringIO.StringIO()
         pickler = self.__pickler(output_file)
