@@ -89,8 +89,9 @@ def main():
         level = logging.INFO
 
     logging.getLogger().addHandler(logging.StreamHandler())
+    logging.getLogger().addHandler(logging.FileHandler('zodbupdate.log'))
     logging.getLogger().setLevel(level)
-    logging.getLogger('zodbupdate').addFilter(duplicate_filter)
+    # logging.getLogger('zodbupdate').addFilter(duplicate_filter)
 
     if options.file and options.config:
         raise SystemExit(
@@ -115,6 +116,7 @@ def main():
         logging.info(u'Loaded %s rules from %s:%s' %
                       (len(rules), entry_point.module_name, entry_point.name))
 
+    logging.info(u'rules: %s' % rename_rules)
     updater = zodbupdate.update.Updater(
         storage,
         dry=options.dry_run,
